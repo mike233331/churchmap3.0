@@ -3,7 +3,7 @@ from sqlalchemy.sql import func
 from dataclasses import dataclass
 
 @dataclass
-class Book(db.Model):
+class Church(db.Model):
     id: int
     title: str
     author: str
@@ -26,4 +26,4 @@ class Book(db.Model):
                            server_default=func.now())
 
     def __repr__(self):
-        return f'<Book {self.title}>'
+        return f'<Church {self.title}>'

@@ -1,37 +1,43 @@
 import os, secrets
 from reader import app, db
-from reader.models import Book
+from reader.models import Church
 from flask import render_template, send_from_directory, request, flash, url_for, redirect, jsonify
 from PIL import Image
-from reader.forms import BookForm, UpdateBook
+from reader.forms import ChurchForm, UpdateChurch
 from sqlalchemy.exc import IntegrityError
 
 @app.route('/')
 def index():
     page = request.args.get('page', 1, type=int)
-    books = Book.query.order_by(Book.created_at.desc()).paginate(page=page, per_page=4)
-    return render_template('index.html', books=books)
+    churchs = Church.query.order_by(Church.created_at.desc()).paginate(page=page, per_page=4)
+    return render_template('index.html', churchs=churchs)
 
 @app.route('/uploads/<filename>')
 def send_file(filename):
     return send_from_directory(app.config['UPLOAD_FOLDER'], filename)    
 
-@app.route('/<int:book_id>/')
-def book(book_id):
-    book = Book.query.get_or_404(book_id)
-    return render_template('book.html', book=book)      
+@app.route('/<int:church_id>/')
+def church(church_id):
+    church = Church.query.get_or_404(church_id)
+    return render_template('church.html', church=church)
 
-@app.route('/thrillers/')
-def thrillers():
+@app.route('/countries/')
+def countries():
     page = request.args.get('page', 1, type=int)
-    books = Book.query.filter(Book.genre == 'триллер').paginate(page=page, per_page=4)
-    return render_template('thrillers.html', books=books)
+    churchs = Church.query.filter(Church.genre == 'триллер').paginate(page=page, per_page=4)
+    return render_template('countries.html', churchs=churchs)
 
 @app.route('/best/')
 def best():
     page = request.args.get('page', 1, type=int)
-    books = Book.query.filter(Book.rating > 4).paginate(page=page, per_page=4)
-    return render_template('best.html', books=books)      
+    churchs = Church.query.filter(Church.rating > 4).paginate(page=page, per_page=4)
+    return render_template('best.html', churchs=churchs)
+
+@app.route('/russia/')
+def russia():
+    page = request.args.get('page', 1, type=int)
+    churchs = Church.query.filter(Church.genre == 'триллер').paginate(page=page, per_page=4)
+    return render_template('russia.html', churchs=churchs)
 
 def save_picture(cover):
     random_hex = secrets.token_hex(8)
@@ -48,7 +54,7 @@ def save_picture(cover):
 
 @app.route('/create/', methods=('GET', 'POST'))
 def create():
-    form = BookForm()
+    form = ChurchForm()
     if form.validate_on_submit():
         if form.cover.data:
             cover = save_picture(form.cover.data)
@@ -60,34 +66,34 @@ def create():
         rating = int(form.rating.data)
         description = form.description.data
         notes = form.notes.data
-        book = Book(title=title,
+        church = Church(title=title,
             author=author,
             genre=genre,
             rating=rating,
             cover=cover,
             description=description,
             notes=notes)
-        db.session.add(book)
+        db.session.add(church)
         db.session.commit()
         return redirect(url_for('index'))
 
     return render_template('create.html', form=form)
 
-@app.route('/<int:book_id>/edit/', methods=('GET', 'POST'))
-def edit(book_id):
-    book = Book.query.get_or_404(book_id)
-    form = UpdateBook()
+@app.route('/<int:church_id>/edit/', methods=('GET', 'POST'))
+def edit(church_id):
+    church = Church.query.get_or_404(church_id)
+    form = UpdateChurch()
     if form.validate_on_submit():
         if form.cover.data:
             cover = save_picture(form.cover.data)
         else:
-            cover = book.cover
-        book.title = form.title.data
-        book.author = form.author.data
-        book.genre = form.genre.data
-        book.rating = int(form.rating.data)
-        book.description = form.description.data
-        book.notes = form.notes.data
+            cover = church.cover
+        church.title = form.title.data
+        church.author = form.author.data
+        church.genre = form.genre.data
+        church.rating = int(form.rating.data)
+        church.description = form.description.data
+        church.notes = form.notes.data
         try:
             db.session.commit()
             return redirect(url_for('index'))
@@ -98,24 +104,24 @@ def edit(book_id):
       
             
     elif request.method == 'GET':
-        form.title.data = book.title
-        form.author.data = book.author
-        form.genre.data = book.genre
-        form.rating.data = book.rating
-        form.cover.data = book.cover
-        form.description.data = book.description
-        form.notes.data = book.notes
+        form.title.data = church.title
+        form.author.data = church.author
+        form.genre.data = church.genre
+        form.rating.data = church.rating
+        form.cover.data = church.cover
+        form.description.data = church.description
+        form.notes.data = church.notes
 
     return render_template('edit.html', form=form)      
 
-@app.post('/<int:book_id>/delete/')
-def delete(book_id):
-    book = Book.query.get_or_404(book_id)
-    db.session.delete(book)
+@app.post('/<int:church_id>/delete/')
+def delete(church_id):
+    church = Church.query.get_or_404(church_id)
+    db.session.delete(church)
     db.session.commit()
     return redirect(url_for('index'))    
 
 @app.route('/export/')
 def data():
-  data = Book.query.all()
+  data = Church.query.all()
   return jsonify(data)  

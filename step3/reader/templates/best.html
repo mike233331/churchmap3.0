@@ -4,31 +4,31 @@
     <div class="container mx-auto mt-4">
   <div class="d-flex justify-content-center">
 
-{% for book in books.items %}
+{% for church in churchs.items %}
 
 <div class="card">
   <div class="card-img">
-    <img class="card-img" src="{{ url_for('send_file', filename=book.cover) }}" alt="{{ book.cover }}">
-    <span><h4>{{ book.genre }}</h4></span>
+    <img class="card-img" src="{{ url_for('send_file', filename=church.cover) }}" alt="{{ church.cover }}">
+    <span><h4>{{ church.genre }}</h4></span>
     <div class="overlay">
       <div class="overlay-content">
-        <a href="{{ url_for('book', book_id=book.id) }}">Подробнее</a>
+        <a href="{{ url_for('church', church_id=church.id) }}">Подробнее</a>
       </div>
     </div>
   </div>
   <div class="card-content">
-      <h2>{{ book.title }}</h2>
-      <h2>{% set stars = book.rating | int %}
+      <h2>{{ church.title }}</h2>
+      <h2>{% set stars = church.rating | int %}
           {% for n in range(stars) %}
           <span class="fa fa-star checked" style="color:orange"></span>
           {% endfor %}
        </h2>
-      <p>{{ book.description }}</p>
+      <p>{{ church.description }}</p>
      <div class="btn-wrapper text-center d-flex justify-content-between">
       <button type="button" class="btn btn-info btn-sm"> 
-       <a href="{{ url_for('edit', book_id=book.id) }}" style="color:white"><i class="fas fa-pen"></i> Изменить</a>
+       <a href="{{ url_for('edit', church_id=church.id) }}" style="color:white"><i class="fas fa-pen"></i> Изменить</a>
       </button>
-       <form action="{{ url_for('delete', book_id=book.id) }}" method="POST">
+       <form action="{{ url_for('delete', church_id=church.id) }}" method="POST">
          <button class='btn btn-danger btn-sm' type="submit" value="Удалить" onclick="return confirm('Удалить книгу?')"><i class="fa fa-times"></i> Удалить</button>
        </form>
      </div>
@@ -38,9 +38,9 @@
   </div>
    </div>
 
-    {% for page_num in books.iter_pages(left_edge=1, right_edge=1, left_current=1, right_current=2) %}
+    {% for page_num in churchs.iter_pages(left_edge=1, right_edge=1, left_current=1, right_current=2) %}
       {% if page_num %}
-        {% if books.page == page_num %}
+        {% if churchs.page == page_num %}
           <a class="btn btn-info mb-4" href="{{ url_for('best', page=page_num) }}">{{ page_num }}</a>
         {% else %}
           <a class="btn btn-outline-info mb-4" href="{{ url_for('best', page=page_num) }}">{{ page_num }}</a>

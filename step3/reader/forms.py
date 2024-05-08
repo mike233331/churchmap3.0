@@ -2,9 +2,9 @@ from flask_wtf import FlaskForm
 from wtforms import StringField, TextAreaField, IntegerField, SubmitField
 from flask_wtf.file import FileField, FileAllowed
 from wtforms.validators import DataRequired, Length, NumberRange, ValidationError
-from reader.models import Book
+from reader.models import Church
 
-class BookForm(FlaskForm):
+class ChurchForm(FlaskForm):
     title = StringField('Название', validators=[DataRequired(),
                                              Length(min=5, max=100)])
     author = StringField('Автор', validators=[DataRequired(),
@@ -22,12 +22,12 @@ class BookForm(FlaskForm):
     submit = SubmitField('Добавить')
 
     def validate_title(self, title):
-        title = Book.query.filter_by(title=title.data).first()
+        title = Church.query.filter_by(title=title.data).first()
         if title:
             raise ValidationError('Такая книга уже есть в списке прочитанных.')
 
 
-class UpdateBook(FlaskForm):
+class UpdateChurch(FlaskForm):
     title = StringField('Название', validators=[DataRequired(),
                                              Length(min=5, max=100)])
     author = StringField('Автор', validators=[DataRequired(),
